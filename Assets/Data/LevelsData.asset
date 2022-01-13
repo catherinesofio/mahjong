@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 738b8a3da824dbc4d9f08f4f8d9d0bfa, type: 3}
+  m_Name: LevelsData
+  m_EditorClassIdentifier: 
+  folder: TestLayouts
+  data:
+  - layoutFiles: Layout_01.txt
+    tilesData: {fileID: 11400000, guid: c7fcc6ef97b9f3f4a884a7344ac7c774, type: 2}
+  - layoutFiles: Layout_02.txt
+    tilesData: {fileID: 11400000, guid: c7fcc6ef97b9f3f4a884a7344ac7c774, type: 2}
+  - layoutFiles: Layout_03.txt
+    tilesData: {fileID: 11400000, guid: 84a8d7872e07664408b802a186a00a98, type: 2}
+  - layoutFiles: Layout_04.txt
+    tilesData: {fileID: 11400000, guid: 84a8d7872e07664408b802a186a00a98, type: 2}
+  - layoutFiles: Layout_05.txt
+    tilesData: {fileID: 11400000, guid: b517cea928ef87d4e973abbf9fee89d1, type: 2}
