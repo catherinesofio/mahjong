@@ -41,7 +41,7 @@ public class DataManager : MonoBehaviour
     {
         if (_instance)
         {
-            Destroy(this);
+            Destroy(gameObject);
         } else
         {
             _instance = this;

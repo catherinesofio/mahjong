@@ -20,7 +20,7 @@ public class ScreenManager : MonoBehaviour
     {
         if (_instance)
         {
-            Destroy(this);
+            Destroy(gameObject);
         } else
         {
             _instance = this;
