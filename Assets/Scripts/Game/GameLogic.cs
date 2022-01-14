@@ -1,171 +1,221 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// IN PROCESS! HAS TEMP THINGS THAT WILL BE CHANGED!
 public class GameLogic : MonoBehaviour
 {
+    private int _score;
+
     // Count of cells by axis
     private int _countX;
     private int _countY;
 
     [SerializeField]
-    private int _tileWidth;
+    private int _nodeWidth;
     [SerializeField]
-    private int _tileHeight;
+    private int _nodeHeight;
     [SerializeField]
-    private GameObject _tilePrefab;
+    private GameObject _nodePrefab;
 
-    private NodeView _selected;
+    private Node _selected;
+    private Node[] _graph;
 
-    // MAY CHANGE
-    private List<NodeView> _graph;
     private Coroutine _coroutine;
 
     private void Start()
     {
+        _score = 0;
+
+        EventManager.AddEventListener(EventId.NODE_SELECT, OnSelectNode);
+
         LoadLevel();
     }
 
-    #region LoadLevel
+    private void OnDestroy()
+    {
+        EventManager.RemoveEventListener(EventId.NODE_SELECT, OnSelectNode);
+    }
+
+    #region Load Level
     private void LoadLevel()
     {
         var layout = GetGameLayout();
 
         CreateGraph(layout);
 
-        SetGraphNeighbours();
-
         CenterGraph();
     }
 
-    private string GetGameLayout()
+    private char[] GetGameLayout()
     {
         var dataManager = GameObject.FindObjectOfType<DataManager>();
 
-        var level = GameObject.FindObjectOfType<ScreenManager>().Level;
-        var path = $"{dataManager.LevelsFolder}/{dataManager[level].layoutFiles}";
+        var path = $"{dataManager.GetLevelPath()}";
+        var stringLayout = Utils.ReadTextFile(path);
 
-        return Utils.ReadTextFile(path);
+        var nodes = stringLayout.ToCharArray().Where(x => x == 'X' || x == '0').ToArray();
+        var reader = new StringReader(stringLayout);
+        
+        _countX = reader.ReadLine().Length;
+        _countY = nodes.Length / _countX;
+
+        return nodes;
+
     }
 
-    private void CreateGraph(string layout)
+    // Could be improved so as to avoid creating a Board without a solution!!
+    private void CreateGraph(char[] layout)
     {
-        _graph = new List<NodeView>();
+        _graph = new Node[_countX * _countY];
 
-        var x = 0;
-        var y = 0;
-        using (StringReader reader = new StringReader(layout))
+        for (var i = 0; i < _countX * _countY; i++)
         {
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                foreach (char c in line)
-                {
-                    var go = GameObject.Instantiate(_tilePrefab, new Vector3(_tileWidth * x, _tileHeight * -y, 0), Quaternion.identity, transform);
-                    var tile = go.GetComponent<NodeView>();
-                    if (!c.Equals('0'))
-                    {
-                        tile.SetIsEmpty(false);
-                        tile.SetCallback(OnSelectTile);
-                    }
-                    else
-                    {
-                        tile.SetIsEmpty(true);
-                        tile.gameObject.SetActive(false);
-                    }
-                    tile.SetCoordinates(new Vector2(x, y));
-
-                    _graph.Add(tile);
-
-                    x++;
-                }
-
-                y++;
-
-                _countX = x;
-                _countY = y;
-
-                x = 0;
-            }
+            GetOrCreateNode(i, layout);
         }
     }
 
-    private void SetGraphNeighbours()
+    private Node GetOrCreateNode(int id, char[] layout)
     {
-        for (var id = 0; id < _graph.Count - 1; id++)
+        if (_graph[id] != null)
         {
-            var x = id % _countX;
-            var y = id / _countX;
-
-            #region Horizontal
-            if (x > 0)
-            {
-                _graph[id].AddNeighbour(_graph[id - 1]);
-            }
-
-            if (x < _countX - 1)
-            {
-                _graph[id].AddNeighbour(_graph[id + 1]);
-            }
-            #endregion
-
-            #region Vertical
-            if (y > 0)
-            {
-                _graph[id].AddNeighbour(_graph[id - _countX]);
-            }
-
-            if (y < _countY - 1)
-            {
-                _graph[id].AddNeighbour(_graph[id + _countX]);
-            }
-            #endregion
+            return _graph[id];
         }
+
+        var x = id % _countX;
+        var y = id / _countX;
+
+        var go = GameObject.Instantiate(_nodePrefab, new Vector3(_nodeWidth * x, -_nodeHeight * y, 0), Quaternion.identity, transform);
+        var node = go.GetComponent<Node>();
+        node.SetCoordinates(new Vector2(x, y));
+
+        if (layout[id].Equals('0'))
+        {
+            node.SetId(-1);
+        } else
+        {
+            var dataManager = GameObject.FindObjectOfType<DataManager>();
+            node.SetId(UnityEngine.Random.Range(0, dataManager.GetLevelTilesCount() - 1));
+        }
+
+        _graph[id] = node;
+
+        SetNeighbours(id, layout);
+
+        return node;
+    }
+
+    private void SetNeighbours(int id, char[] layout)
+    {
+        var x = id % _countX;
+        var y = id / _countX;
+
+        #region Horizontal
+        if (x > 0)
+        {
+            _graph[id].AddNeighbour(GetOrCreateNode(id - 1, layout));
+        }
+
+        if (x < _countX - 1)
+        {
+            _graph[id].AddNeighbour(GetOrCreateNode(id + 1, layout));
+        }
+        #endregion
+
+        #region Vertical
+        if (y > 0)
+        {
+            _graph[id].AddNeighbour(GetOrCreateNode(id - _countX, layout));
+        }
+
+        if (y < _countY - 1)
+        {
+            _graph[id].AddNeighbour(GetOrCreateNode(id + _countX, layout));
+        }
+        #endregion
     }
 
     private void CenterGraph()
     {
-        var posX = _countX * _tileWidth / 2f;
-        var posY = _countY * _tileHeight / 2f;
+        var posX = _countX * _nodeWidth / 2f;
+        var posY = _countY * _nodeHeight / 2f;
         transform.position = new Vector2(-posX, posY);
 
         Camera.main.orthographicSize = Math.Max(_countX, _countY);
     }
     #endregion
 
-    private void OnSelectTile(NodeView tile)
+    private void OnSelectNode(object obj)
     {
-        if (_selected == null)
+        var node = (Node)obj;
+
+        var isSurrounded = node.Neighbours.Count == node.Neighbours.Where(n => n.Id > 0).Count();
+
+        if (_selected == null && !isSurrounded)
         {
-            _selected = tile;
-            // call select tile
+            _selected = node;
         }
-        else if (_selected == tile)
+        else if (_selected == node)
         {
             _selected = null;
-            // call unselect tile
         }
-        else
+        else if (!isSurrounded && _selected.Id == node.Id)
         {
             if (_coroutine != null)
             {
                 StopCoroutine(_coroutine);
             }
+            Debug.Log($"{_selected.Id} => {node.Id}");
 
-            _coroutine = StartCoroutine(CalculateTurns(_selected, tile));
+            _coroutine = StartCoroutine(CalculateTurns(_selected, node));
         }
     }
 
-    private IEnumerator CalculateTurns(NodeView from, NodeView to)
+    // Basically Dijkstra
+    private IEnumerator CalculateTurns(Node from, Node to)
     {
-        var queue = new Queue();
+        var turns = 0;
 
-        while (queue.Count > 0)
+        var nextNodeToGoal = new Dictionary<Node, Node>();
+        var costToReachNode = new Dictionary<Node, int>();
+
+        var queue = new PriorityQueue<Node>();
+
+        queue.Enqueue(to, 0);
+        costToReachNode[to] = 0;
+
+        while (!queue.IsEmpty)
         {
+            var curr = queue.Dequeue();
+            var currNode = curr.Item1;
+            var currDir = curr.Item2;
+
+            if (currNode == from)
+            {
+                turns = costToReachNode[currNode];
+                break;
+            }
+
+            // Filter out NOT empty nodes
+            var neighbours = currNode.Neighbours.Where(n => n.Id < 0);
+            foreach (var n in neighbours)
+            {
+                var nDir = (currNode.Coordinates.x == n.Coordinates.x) ? 1 : 2;
+                var cost = costToReachNode[currNode] + ((currDir == 0 || currDir == nDir) ? 0 : 1);
+
+                if (!costToReachNode.ContainsKey(n) || cost < costToReachNode[n])
+                {
+                    costToReachNode[n] = cost;
+                    queue.Enqueue(n, cost, nDir);
+                    nextNodeToGoal[n] = currNode;
+                }
+            }
+
             yield return null;
         }
+
+        Debug.Log(turns);
     }
 }

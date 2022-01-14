@@ -22,8 +22,11 @@ public class ButtonChangeScreen : MonoBehaviour
 
     private void TriggerChangeScreen()
     {
+        var dataManager = GameObject.FindObjectOfType<DataManager>();
+        dataManager.Level = _level;
+
         var screenManager = GameObject.FindObjectOfType<ScreenManager>();
-        screenManager.ChangeScreen(_screenId, _allowSceneActivation, _level);
+        screenManager.ChangeScreen(_screenId, _allowSceneActivation);
     }
 
     internal ButtonChangeScreen SetLevel(int level)

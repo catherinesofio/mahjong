@@ -5,6 +5,8 @@ public class DataManager : MonoBehaviour
     [SerializeField]
     private LevelsData _levels;
 
+    private int _level;
+
     private string _pathPlayerData = "player_data.json";
     private string _pathLevelsData = "levels_data.json";
 
@@ -13,7 +15,19 @@ public class DataManager : MonoBehaviour
 
     private static DataManager _instance;
 
-    public int LevelsCount
+    internal int Level
+    {
+        get
+        {
+            return _level;
+        }
+        set
+        {
+            _level = value;
+        }
+    }
+
+    internal int LevelsCount
     {
         get
         {
@@ -21,20 +35,19 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    public string LevelsFolder
+    internal string GetLevelPath()
     {
-        get
-        {
-            return _levels.folder;
-        }
+        return  $"{_levels.folder}/{_levels.data[_level].layoutFiles}";
     }
 
-    public LevelModel this[int id]
+    internal int GetLevelTilesCount()
     {
-        get
-        {
-            return _levels.data[id];
-        }
+        return _levels.data[_level].tilesData.sprites.Length;
+    }
+
+    internal Sprite GetSprite(int id)
+    {
+        return _levels.data[_level].tilesData.sprites[id];
     }
 
     private void Awake()

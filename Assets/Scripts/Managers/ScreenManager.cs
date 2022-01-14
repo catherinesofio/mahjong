@@ -4,17 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class ScreenManager : MonoBehaviour
 {
-    private int _level;
     private bool _isLoading;
     private static ScreenManager _instance;
-
-    public int Level
-    {
-        get
-        {
-            return _level;
-        }
-    }
 
     private void Awake()
     {
@@ -31,11 +22,10 @@ public class ScreenManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public void ChangeScreen(ScreenId screenId, bool allowSceneActivation = true, int level = -1)
+    public void ChangeScreen(ScreenId screenId, bool allowSceneActivation = true)
     {
         if (!_isLoading)
         {
-            _level = level;
             _isLoading = true;
             StartCoroutine(LoadScreen((int)screenId, allowSceneActivation));
         }

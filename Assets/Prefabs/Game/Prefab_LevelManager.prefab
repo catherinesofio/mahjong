@@ -43,6 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 008125b3f1169cd4c97909be4b595d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tileWidth: 1
-  _tileHeight: 1
-  _tilePrefab: {fileID: 6658862029460245752, guid: c0d23b298be1b284fba19ed6f31401bb, type: 3}
+  _nodeWidth: 1
+  _nodeHeight: 1
+  _nodePrefab: {fileID: 6658862029460245752, guid: c0d23b298be1b284fba19ed6f31401bb, type: 3}

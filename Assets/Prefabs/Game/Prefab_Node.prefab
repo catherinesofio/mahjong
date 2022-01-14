@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5755913013870527259}
   - component: {fileID: -1509562968394355636}
   - component: {fileID: -8029948353100391937}
-  - component: {fileID: 9154358223158755950}
+  - component: {fileID: 7580512856273330093}
   m_Layer: 0
-  m_Name: Prefab_Tile
+  m_Name: Prefab_Node
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -111,7 +111,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.1, y: 1.38}
   m_EdgeRadius: 0
---- !u!114 &9154358223158755950
+--- !u!114 &7580512856273330093
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,11 +120,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6658862029460245752}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebb978d3fd3081f498c9cb91a3e4512f, type: 3}
+  m_Script: {fileID: 11500000, guid: 005c2fa6c86adac4b8521bf1a8774c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _typeSprite: {fileID: 7178564395183406654}
-  _neighbours: []
+  _spriteRenderer: {fileID: 7178564395183406654}
 --- !u!1 &9175731548724882529
 GameObject:
   m_ObjectHideFlags: 0
