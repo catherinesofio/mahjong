@@ -22,7 +22,7 @@ public class EventManager : MonoBehaviour
         _events = new Dictionary<EventId, EventCallback>();
     }
 
-    internal static void AddEventListener(EventId eventId, EventCallback callback)
+    public static void AddEventListener(EventId eventId, EventCallback callback)
     {
         if (_events.ContainsKey(eventId))
         {
@@ -33,7 +33,7 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    internal static void RemoveEventListener(EventId eventId, EventCallback callback)
+    public static void RemoveEventListener(EventId eventId, EventCallback callback)
     {
         if (_events.ContainsKey(eventId))
         {
@@ -41,7 +41,7 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    internal static void DispatchEvent(EventId eventId, object obj = null)
+    public static void DispatchEvent(EventId eventId, object obj = null)
     {
         if (_events.ContainsKey(eventId))
         {

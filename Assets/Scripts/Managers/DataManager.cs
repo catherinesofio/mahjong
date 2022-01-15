@@ -1,21 +1,21 @@
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
+    private int _level;
+
     [SerializeField]
     private LevelsData _levels;
 
-    private int _level;
-
     private string _pathPlayerData = "player_data.json";
-    private string _pathLevelsData = "levels_data.json";
-
     private static PlayerDataModel _playerData;
-    private static LevelDataModel _levelsData;
 
     private static DataManager _instance;
 
-    internal int Level
+    #region General Properties
+    public int Level
     {
         get
         {
@@ -27,7 +27,7 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    internal int LevelsCount
+    public int LevelsCount
     {
         get
         {
@@ -35,20 +35,48 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    internal string GetLevelPath()
+    public int Highscore
     {
-        return  $"{_levels.folder}/{_levels.data[_level].layoutFiles}";
+        get
+        {
+            var data = _playerData.levelData.Where(x => x.level == _level).FirstOrDefault();
+
+            return (data != null) ? data.highscore : 0;
+        }
+    }
+    #endregion
+
+    #region Level Getters
+    public bool IsLevelCompleted(int level)
+    {
+        var data = _playerData.levelData.Where(x => x != null && x.level == level).FirstOrDefault();
+
+        return data != null;
     }
 
-    internal int GetLevelTilesCount()
+    public string GetLevelPath()
+    {
+        return $"{_levels.folder}/{_levels.data[_level].layoutFiles}";
+    }
+
+    public int GetLevelTilesCount()
     {
         return _levels.data[_level].tilesData.sprites.Length;
     }
 
-    internal Sprite GetSprite(int id)
+    public Sprite GetSprite(int id)
     {
         return _levels.data[_level].tilesData.sprites[id];
     }
+
+    public Color GetTileSelectedColor() {
+        return _levels.data[_level].tilesData.selectedColor;
+    }
+    public Color GetTileUnselectedColor()
+    {
+        return _levels.data[_level].tilesData.unselectedColor;
+    }
+    #endregion
 
     private void Awake()
     {
@@ -64,6 +92,13 @@ public class DataManager : MonoBehaviour
     private void Start()
     {
         LoadData();
+
+        EventManager.AddEventListener(EventId.GAME_WON, SaveScore);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.RemoveEventListener(EventId.GAME_WON, SaveScore);
     }
 
     private void LoadData()
@@ -72,18 +107,29 @@ public class DataManager : MonoBehaviour
         if (_playerData == null)
         {
             _playerData = new PlayerDataModel();
-        }
-
-        _levelsData = Utils.ReadJson<LevelDataModel>(_pathLevelsData);
-        if (_levelsData == null)
-        {
-            _levelsData = new LevelDataModel();
+            _playerData.levelData = new List<LevelDataModel>();
         }
     }
 
-    private void SaveData()
+    private void SaveScore(object obj)
     {
+        var score = (int)obj;
+        var data = _playerData.levelData.Where(x => x.level == _level).FirstOrDefault();
+
+        Debug.Log(JsonUtility.ToJson(_playerData));
+        if (data != null && score > data.highscore)
+        {
+            data.highscore = score;
+        } else
+        {
+            data = new LevelDataModel();
+            data.level = _level;
+            data.highscore = score;
+
+            _playerData.levelData.Add(data);
+        }
+        Debug.Log(JsonUtility.ToJson(_playerData));
+
         Utils.WriteJson<PlayerDataModel>(_playerData, _pathPlayerData);
-        Utils.WriteJson<LevelDataModel>(_levelsData, _pathLevelsData);
     }
 }

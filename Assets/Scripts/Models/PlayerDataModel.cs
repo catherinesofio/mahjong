@@ -1,7 +1,8 @@
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class PlayerDataModel
 {
-    public LevelDataModel[] levelData;
+    public List<LevelDataModel> levelData;
 }

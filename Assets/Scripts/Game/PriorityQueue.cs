@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-public class PriorityQueue<T>
+public class PriorityQueue<T, D>
 {
-    private List<Tuple<T, int, int>> _elements;
+    private List<Tuple<T, float, D>> _elements;
 
     public bool IsEmpty
     {
@@ -15,27 +15,28 @@ public class PriorityQueue<T>
 
     public PriorityQueue()
     {
-        _elements = new List<Tuple<T, int, int>>();
+        _elements = new List<Tuple<T, float, D>>();
     }
 
-    public void Enqueue(T item, int priority, int direction = 0)
+    public void Enqueue(T item, float priority, D direction)
     {
-        _elements.Add(new Tuple<T, int, int>(item, priority, direction));
+        _elements.Add(new Tuple<T, float, D>(item, priority, direction));
     }
 
-    public Tuple<T, int> Dequeue()
+    public Tuple<T, D> Dequeue()
     {
         int priorityIndex = 0;
 
         for (var i = 0; i < _elements.Count - 1; i++)
         {
-            priorityIndex = (_elements[i].Item2 > _elements[priorityIndex].Item2) ? i : priorityIndex;
+            priorityIndex = (_elements[i].Item2 < _elements[priorityIndex].Item2) ? i : priorityIndex;
         }
 
         var element = _elements[priorityIndex].Item1;
         var direction = _elements[priorityIndex].Item3;
+
         _elements.RemoveAt(priorityIndex);
 
-        return new Tuple<T, int>(element, direction);
+        return new Tuple<T, D>(element, direction);
     }
 }

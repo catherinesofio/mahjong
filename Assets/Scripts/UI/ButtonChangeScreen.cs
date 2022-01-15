@@ -5,14 +5,9 @@ using UnityEngine.UI;
 public class ButtonChangeScreen : MonoBehaviour
 {
     [SerializeField]
-    private int _level;
-    [SerializeField]
     private bool _allowSceneActivation;
     [SerializeField]
     private ScreenId _screenId;
-
-    [SerializeField]
-    private Text _text;
 
     private void Start()
     {
@@ -20,26 +15,9 @@ public class ButtonChangeScreen : MonoBehaviour
         button.onClick.AddListener(TriggerChangeScreen);
     }
 
-    private void TriggerChangeScreen()
+    protected virtual void TriggerChangeScreen()
     {
-        var dataManager = GameObject.FindObjectOfType<DataManager>();
-        dataManager.Level = _level;
-
         var screenManager = GameObject.FindObjectOfType<ScreenManager>();
         screenManager.ChangeScreen(_screenId, _allowSceneActivation);
-    }
-
-    internal ButtonChangeScreen SetLevel(int level)
-    {
-        _level = level;
-
-        return this;
-    }
-
-    internal ButtonChangeScreen SetText(string text)
-    {
-        _text.text = text;
-     
-        return this;
     }
 }

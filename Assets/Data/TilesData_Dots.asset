@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dc263d46ee5b604d8073ee56758bd3e, type: 3}
   m_Name: TilesData_Dots
   m_EditorClassIdentifier: 
+  selectedColor: {r: 0.76470596, g: 0.76470596, b: 0.76470596, a: 1}
+  unselectedColor: {r: 1, g: 1, b: 1, a: 1}
   sprites:
   - {fileID: 21300000, guid: 6bb53e17c71c1ed4c826c9e8c0642a66, type: 3}
   - {fileID: 21300000, guid: 3af37306ba16a2a4f994bc7d8c678f1e, type: 3}

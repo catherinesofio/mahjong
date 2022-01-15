@@ -1,19 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class Node : MonoBehaviour
 {
-	private int _id;
-    private Vector2 _coordinates;
-    
     [SerializeField]
-    private SpriteRenderer _spriteRenderer;
+    private int _id;
+    private int _x;
+    private int _y;
+    private HashSet<Node> _neighbours;
 
     [SerializeField]
-    private List<Node> _neighbours;
+    private SpriteRenderer _nodeType;
+    [SerializeField]
+    private SpriteRenderer _nodeBackground;
 
-    internal int Id
+    [SerializeField]
+    private Animation _animation;
+
+    private static DataManager _dataManager;
+
+    #region Properties
+    public int Id
     {
         get
         {
@@ -21,72 +29,113 @@ public class Node : MonoBehaviour
         }
     }
 
-    internal Vector2 Coordinates
+    public int X
     {
         get
         {
-            return _coordinates;
+            return _x;
         }
     }
 
-    internal List<Node> Neighbours
+    public int Y
+    {
+        get
+        {
+            return _y;
+        }
+    }
+
+    public Vector2 Coordinates
+    {
+        get
+        {
+            return new Vector2(_x, _y);
+        }
+    }
+
+    public HashSet<Node> Neighbours
     {
         get
         {
             return _neighbours;
         }
     }
+    #endregion
 
-    private void Awake()
+    #region Setters
+    public void SetId(int id)
     {
-        _neighbours = new List<Node>();
-    }
+        _id = id;
 
-    private void Start()
-    {
-        EventManager.AddEventListener(EventId.NODE_MATCH, Hide);
-    }
-
-    private void OnDestroy()
-    {
-        EventManager.RemoveEventListener(EventId.NODE_MATCH, Hide);
-    }
-
-    internal void SetId(int id)
-    {
-        if (id < 0)
+        if (_id < 0)
         {
             Hide();
         } else
         {
-            _id = id;
-            var dataManager = GameObject.FindObjectOfType<DataManager>();
-            _spriteRenderer.sprite = dataManager.GetSprite(_id);
+            _nodeType.sprite = _dataManager.GetSprite(id);
         }
     }
 
-    internal void SetCoordinates(Vector2 coordinates)
+    public void SetCoordinates(int x, int y)
     {
-        _coordinates = coordinates;
+        _x = x;
+        _y = y;
     }
 
-    internal void AddNeighbour(Node neighbour)
+    public void AddNeighbour(Node neighbour)
     {
-        if (!_neighbours.Contains(neighbour))
+        _neighbours.Add(neighbour);
+    }
+    #endregion
+
+    private void Awake()
+    {
+        _neighbours = new HashSet<Node>();
+
+        if (!_dataManager)
         {
-            _neighbours.Add(neighbour);
+            _dataManager = GameObject.FindObjectOfType<DataManager>();
         }
-    }
-
-    private void Hide(object obj = null)
-    {
-        _id = -1;
-        GetComponent<SpriteRenderer>().enabled = false;
-        GetComponent<BoxCollider2D>().enabled = false;
     }
 
     private void OnMouseDown()
     {
-        EventManager.DispatchEvent(EventId.NODE_SELECT, (object)this);
+        EventManager.DispatchEvent(EventId.NODE_CLICK, this);
+    }
+
+    #region Selection
+    public void Select()
+    {
+        _nodeBackground.color = _dataManager.GetTileSelectedColor();
+    }
+
+    public void Unselect()
+    {
+        _nodeBackground.color = _dataManager.GetTileUnselectedColor();
+    }
+
+    public void CancelSelection()
+    {
+        Unselect();
+        _animation.Play();
+    }
+
+    public void Match()
+    {
+        _animation.Stop();
+        Hide();
+    }
+
+    public void Hint()
+    {
+        _animation.Play();
+    }
+    #endregion
+
+    private void Hide()
+    {
+        _id = -1;
+
+        gameObject.SetActive(false);
     }
 }
