@@ -36,7 +36,7 @@ public class CanvasGame : MonoBehaviour
         EventManager.RemoveEventListener(EventId.SCORE_UPDATE, UpdateScore);
         EventManager.RemoveEventListener(EventId.GAME_LOST, ShowLostPopup);
         EventManager.RemoveEventListener(EventId.GAME_QUIT, ShowQuitPopup);
-        EventManager.AddEventListener(EventId.GAME_RESUME, HideQuitPopup);
+        EventManager.RemoveEventListener(EventId.GAME_RESUME, HideQuitPopup);
         EventManager.RemoveEventListener(EventId.GAME_WON, ShowWonPopup);
     }
 
@@ -68,7 +68,7 @@ public class CanvasGame : MonoBehaviour
         var dataManager = GameObject.FindObjectOfType<DataManager>();
 
         _scoreWonText.text = score.ToString();
-        _highscoreWonText.text = dataManager.Highscore.ToString();
+        _highscoreWonText.text = dataManager.LevelHighscore.ToString();
         _wonPopup.SetActive(true);
     }
 }

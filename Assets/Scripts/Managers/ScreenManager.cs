@@ -15,11 +15,10 @@ public class ScreenManager : MonoBehaviour
         } else
         {
             _instance = this;
+
+            _isLoading = false;
+            DontDestroyOnLoad(this);
         }
-
-        _isLoading = false;
-
-        DontDestroyOnLoad(this);
     }
 
     public void ChangeScreen(ScreenId screenId, bool allowSceneActivation = true)

@@ -9,7 +9,7 @@ public class ButtonChangeScreen : MonoBehaviour
     [SerializeField]
     private ScreenId _screenId;
 
-    private void Start()
+    protected virtual void Start()
     {
         var button = GetComponent<Button>();
         button.onClick.AddListener(TriggerChangeScreen);

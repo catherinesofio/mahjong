@@ -37,4 +37,13 @@ public class Utils
 
         File.WriteAllText(fullPath, jsonData);
     }
+
+    public static void DeletePersistentData()
+    {
+        string[] filePaths = Directory.GetFiles(Application.persistentDataPath);
+        foreach (string filePath in filePaths)
+        {
+            File.Delete(filePath);
+        }
+    }
 }

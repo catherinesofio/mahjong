@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,15 @@ public class DataManager : MonoBehaviour
 
     private static DataManager _instance;
 
-    #region General Properties
+    #region Properties
+    public int LevelsCount
+    {
+        get
+        {
+            return _levels.data.Length;
+        }
+    }
+
     public int Level
     {
         get
@@ -26,16 +35,8 @@ public class DataManager : MonoBehaviour
             _level = value;
         }
     }
-
-    public int LevelsCount
-    {
-        get
-        {
-            return _levels.data.Length;
-        }
-    }
-
-    public int Highscore
+    
+    public int LevelHighscore
     {
         get
         {
@@ -45,15 +46,8 @@ public class DataManager : MonoBehaviour
         }
     }
     #endregion
-
-    #region Level Getters
-    public bool IsLevelCompleted(int level)
-    {
-        var data = _playerData.levelData.Where(x => x != null && x.level == level).FirstOrDefault();
-
-        return data != null;
-    }
-
+    
+    #region Current Level Getters
     public string GetLevelPath()
     {
         return $"{_levels.folder}/{_levels.data[_level].layoutFiles}";
@@ -64,17 +58,44 @@ public class DataManager : MonoBehaviour
         return _levels.data[_level].tilesData.sprites.Length;
     }
 
-    public Sprite GetSprite(int id)
+    public Sprite GetLevelSprite(int id)
     {
         return _levels.data[_level].tilesData.sprites[id];
     }
 
-    public Color GetTileSelectedColor() {
+    public Color GetLevelSelectedColor() {
         return _levels.data[_level].tilesData.selectedColor;
     }
-    public Color GetTileUnselectedColor()
+    public Color GetLevelUnselectedColor()
     {
         return _levels.data[_level].tilesData.unselectedColor;
+    }
+    #endregion
+
+    #region Menu Getters
+    public Tuple<bool, bool> GetLevelData(int level)
+    {
+        var data = _playerData.levelData.Where(x => x != null && x.level == level).FirstOrDefault();
+
+        var hasCompletedLevel = data != null;
+        var hasJustGainedStar = (data != null) ? data.hasJustGainedStar : false;
+
+        if (hasJustGainedStar)
+        {
+            data.hasJustGainedStar = false;
+
+            SaveData();
+        }
+
+
+        return new Tuple<bool, bool>(hasCompletedLevel, hasJustGainedStar);
+    }
+
+    public bool IsLevelCompleted(int level)
+    {
+        var data = _playerData.levelData.Where(x => x != null && x.level == level).FirstOrDefault();
+
+        return data != null;
     }
     #endregion
 
@@ -93,12 +114,29 @@ public class DataManager : MonoBehaviour
     {
         LoadData();
 
-        EventManager.AddEventListener(EventId.GAME_WON, SaveScore);
+        EventManager.AddEventListener(EventId.GAME_WON, UpdateScore);
+        EventManager.AddEventListener(EventId.DATA_RESET, DeleteData);
     }
 
-    private void OnDestroy()
+    private void UpdateScore(object obj)
     {
-        EventManager.RemoveEventListener(EventId.GAME_WON, SaveScore);
+        var score = (int)obj;
+        var data = _playerData.levelData.Where(x => x.level == _level).FirstOrDefault();
+    
+        if (data != null && score > data.highscore)
+        {
+            data.highscore = score;
+        } else
+        {
+            data = new LevelDataModel();
+            data.level = _level;
+            data.highscore = score;
+            data.hasJustGainedStar = true;
+
+            _playerData.levelData.Add(data);
+        }
+
+        SaveData();
     }
 
     private void LoadData()
@@ -111,25 +149,15 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    private void SaveScore(object obj)
+    private void SaveData()
     {
-        var score = (int)obj;
-        var data = _playerData.levelData.Where(x => x.level == _level).FirstOrDefault();
-
-        Debug.Log(JsonUtility.ToJson(_playerData));
-        if (data != null && score > data.highscore)
-        {
-            data.highscore = score;
-        } else
-        {
-            data = new LevelDataModel();
-            data.level = _level;
-            data.highscore = score;
-
-            _playerData.levelData.Add(data);
-        }
-        Debug.Log(JsonUtility.ToJson(_playerData));
-
         Utils.WriteJson<PlayerDataModel>(_playerData, _pathPlayerData);
+    }
+
+    private void DeleteData(object obj = null)
+    {
+        _playerData = new PlayerDataModel();
+
+        Utils.DeletePersistentData();
     }
 }

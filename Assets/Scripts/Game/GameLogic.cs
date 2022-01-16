@@ -169,8 +169,8 @@ public class GameLogic : MonoBehaviour
 
     private void CenterGraph()
     {
-        var posX = _countX * _nodeWidth / 2f;
-        var posY = _countY * _nodeHeight / 2f;
+        var posX = (_countX - 2) * _nodeWidth / 2f;
+        var posY = (_countY - 2) * _nodeHeight / 2f;
         transform.position = new Vector2(-posX, posY);
 
         Camera.main.orthographicSize = Math.Max(_countX, _countY);

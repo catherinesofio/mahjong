@@ -10,6 +10,23 @@ public class ButtonChangeLevel : ButtonChangeScreen
     [SerializeField]
     private GameObject _star;
 
+    protected override void Start()
+    {
+        base.Start();
+
+        EventManager.AddEventListener(EventId.DATA_RESET, RemoveStar);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.RemoveEventListener(EventId.DATA_RESET, RemoveStar);
+    }
+
+    private void RemoveStar(object obj = null)
+    {
+        ShowStar(false, false);
+    }
+
     protected override void TriggerChangeScreen()
     {
         var dataManager = GameObject.FindObjectOfType<DataManager>();
@@ -32,9 +49,14 @@ public class ButtonChangeLevel : ButtonChangeScreen
         return this;
     }
 
-    public ButtonChangeLevel ShowStar(bool show)
+    public ButtonChangeLevel ShowStar(bool show, bool firstTime)
     {
         _star.SetActive(show);
+
+        if (show && firstTime)
+        {
+            _star.GetComponent<Animation>().Play();
+        }
 
         return this;
     }

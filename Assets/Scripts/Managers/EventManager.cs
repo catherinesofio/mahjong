@@ -17,9 +17,8 @@ public class EventManager : MonoBehaviour
         } else
         {
             _instance = this;
+            _events = new Dictionary<EventId, EventCallback>();
         }
-
-        _events = new Dictionary<EventId, EventCallback>();
     }
 
     public static void AddEventListener(EventId eventId, EventCallback callback)
@@ -35,7 +34,7 @@ public class EventManager : MonoBehaviour
 
     public static void RemoveEventListener(EventId eventId, EventCallback callback)
     {
-        if (_events.ContainsKey(eventId))
+        if (_events.ContainsKey(eventId) && _events[eventId] != null)
         {
             _events[eventId] -= callback;
         }

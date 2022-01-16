@@ -16,7 +16,7 @@ public class Node : MonoBehaviour
     private SpriteRenderer _nodeBackground;
 
     [SerializeField]
-    private Animation _animation;
+    private Animation _anim;
 
     private static DataManager _dataManager;
 
@@ -72,7 +72,7 @@ public class Node : MonoBehaviour
             Hide();
         } else
         {
-            _nodeType.sprite = _dataManager.GetSprite(id);
+            _nodeType.sprite = _dataManager.GetLevelSprite(id);
         }
     }
 
@@ -106,29 +106,32 @@ public class Node : MonoBehaviour
     #region Selection
     public void Select()
     {
-        _nodeBackground.color = _dataManager.GetTileSelectedColor();
+        _nodeBackground.color = _dataManager.GetLevelSelectedColor();
     }
 
     public void Unselect()
     {
-        _nodeBackground.color = _dataManager.GetTileUnselectedColor();
+        _nodeBackground.color = _dataManager.GetLevelUnselectedColor();
     }
 
     public void CancelSelection()
     {
         Unselect();
-        _animation.Play();
+
+        _anim.Play("Anim_Shake");
     }
 
     public void Match()
     {
-        _animation.Stop();
+        _anim.Stop();
+
         Hide();
     }
 
     public void Hint()
     {
-        _animation.Play();
+        Debug.Log( _anim.GetClipCount());
+        _anim.Play("Anim_Highlight");
     }
     #endregion
 

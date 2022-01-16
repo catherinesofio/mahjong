@@ -7,4 +7,5 @@ public enum EventId
     GAME_QUIT,
     GAME_RESUME,
     GAME_WON,
+    DATA_RESET
 }

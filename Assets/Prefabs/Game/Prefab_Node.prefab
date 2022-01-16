@@ -156,7 +156,7 @@ MonoBehaviour:
   _id: 0
   _nodeType: {fileID: 7178564395183406654}
   _nodeBackground: {fileID: 5750183256801073135}
-  _animation: {fileID: 9181664613743552835}
+  _anim: {fileID: 8515392382939488144}
 --- !u!1 &8349246083828967663
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,7 +166,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2410065731441736028}
-  - component: {fileID: 9181664613743552835}
+  - component: {fileID: 8515392382939488144}
   m_Layer: 0
   m_Name: Sprites
   m_TagString: Untagged
@@ -190,7 +190,7 @@ Transform:
   m_Father: {fileID: 5755913013870527259}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!111 &9181664613743552835
+--- !u!111 &8515392382939488144
 Animation:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,14 +199,15 @@ Animation:
   m_GameObject: {fileID: 8349246083828967663}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 62257882aaaab8d429d458ba8f4b9ea6, type: 2}
+  m_Animation: {fileID: 7400000, guid: b7c1a8a6f7ccbcf409b095bb307ce671, type: 2}
   m_Animations:
-  - {fileID: 7400000, guid: 62257882aaaab8d429d458ba8f4b9ea6, type: 2}
-  - {fileID: 7400000, guid: 9674e145ce6a8894db687aeb42d4b1ad, type: 2}
+  - {fileID: 7400000, guid: b7c1a8a6f7ccbcf409b095bb307ce671, type: 2}
+  - {fileID: 7400000, guid: b27fb259755c26541a7fc7f2958efe86, type: 2}
+  - {fileID: 7400000, guid: b27fb259755c26541a7fc7f2958efe86, type: 2}
   m_WrapMode: 0
-  m_PlayAutomatically: 0
+  m_PlayAutomatically: 1
   m_AnimatePhysics: 0
-  m_CullingType: 0
+  m_CullingType: 1
 --- !u!1 &9175731548724882529
 GameObject:
   m_ObjectHideFlags: 0
