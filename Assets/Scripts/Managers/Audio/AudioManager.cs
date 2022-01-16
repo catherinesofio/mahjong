@@ -5,14 +5,14 @@ public class AudioManager : MonoBehaviour
 {
     private static AudioManager _instance;
 
-    private bool _soundOn;
-    private bool _musicOn;
-
     private AudioSource _soundSource;
     private AudioSource _musicSource;
 
     [SerializeField]
     private AudioData _data;
+
+    public static bool SoundOn { get; private set; }
+    public static bool MusicOn { get; private set; }
 
     private void Awake()
     {
@@ -24,11 +24,11 @@ public class AudioManager : MonoBehaviour
         {
             _instance = this;
 
-            _musicOn = Utils.GetBoolPlayerPref("music");
+            MusicOn = Utils.GetBoolPlayerPref("music");
             _musicSource = gameObject.AddComponent<AudioSource>();
             _musicSource.loop = true;
 
-            _soundOn = Utils.GetBoolPlayerPref("sound");
+            SoundOn = Utils.GetBoolPlayerPref("sound");
             _soundSource = gameObject.AddComponent<AudioSource>();
             _soundSource.loop = false;
         }
@@ -36,12 +36,12 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        if (_musicOn)
+        if (MusicOn)
         {
             PlayMusic();
         }
 
-        if (_soundOn)
+        if (SoundOn)
         {
             EventManager.AddEventListener(EventId.PLAY_SOUND, PlaySound);
         }
@@ -54,9 +54,9 @@ public class AudioManager : MonoBehaviour
     #region Music
     private void ToggleMusic(object obj = null)
     {
-        _musicOn = !_musicOn;
+        MusicOn = !MusicOn;
 
-        if (_musicOn)
+        if (MusicOn)
         {
             PlayMusic();
             EventManager.AddEventListener(EventId.CHANGE_SCREEN, PlayMusic);
@@ -67,7 +67,7 @@ public class AudioManager : MonoBehaviour
             EventManager.RemoveEventListener(EventId.CHANGE_SCREEN, PlayMusic);
         }
 
-        Utils.SetBoolPlayerPref("music", _musicOn);
+        Utils.SetBoolPlayerPref("music", MusicOn);
     }
 
     private void PlayMusic()
@@ -84,6 +84,11 @@ public class AudioManager : MonoBehaviour
 
     private void PlayMusic(object obj)
     {
+        if (!MusicOn)
+        {
+            return;
+        }
+
         var screenId = (ScreenId)obj;
         var musicModel = _data.music.Where(x => x.screenId == screenId).FirstOrDefault();
 
@@ -99,9 +104,9 @@ public class AudioManager : MonoBehaviour
     #region Sound
     private void ToggleSound(object obj = null)
     {
-        _soundOn = !_soundOn;
+        SoundOn = !SoundOn;
 
-        if (_soundOn)
+        if (SoundOn)
         {
             EventManager.AddEventListener(EventId.PLAY_SOUND, PlaySound);
         }
@@ -111,12 +116,12 @@ public class AudioManager : MonoBehaviour
             EventManager.RemoveEventListener(EventId.PLAY_SOUND, PlaySound);
         }
 
-        Utils.SetBoolPlayerPref("sound", _soundOn);
+        Utils.SetBoolPlayerPref("sound", SoundOn);
     }
 
     private void PlaySound(object obj)
     {
-        if (!_soundOn)
+        if (!SoundOn)
         {
             return;
         }

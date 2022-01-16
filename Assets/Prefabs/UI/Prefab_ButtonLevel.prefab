@@ -240,9 +240,9 @@ Animation:
   m_GameObject: {fileID: 7769649735561026163}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: b7c1a8a6f7ccbcf409b095bb307ce671, type: 2}
+  m_Animation: {fileID: 7400000, guid: 884094d52dfd2094b86a56caca90c46a, type: 2}
   m_Animations:
-  - {fileID: 7400000, guid: b7c1a8a6f7ccbcf409b095bb307ce671, type: 2}
+  - {fileID: 7400000, guid: 884094d52dfd2094b86a56caca90c46a, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
@@ -383,7 +383,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33f0d5139afc4fc4c92584c87cdd96cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _allowSceneActivation: 1
   _screenId: 1
   _level: 0
   _text: {fileID: 5163007047302173290}

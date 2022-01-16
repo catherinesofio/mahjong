@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CanvasMenu : MonoBehaviour
 {
@@ -7,9 +8,26 @@ public class CanvasMenu : MonoBehaviour
     [SerializeField]
     private GameObject _prefabButtonLevel;
 
+    [SerializeField]
+    private Text _soundOn;
+    [SerializeField]
+    private Text _musicOn;
+
     private void Start()
     {
+        ToggleMusic();
+        ToggleSound();
+
         CreateLevelButtons();
+
+        EventManager.AddEventListener(EventId.TOGGLE_MUSIC, ToggleMusic);
+        EventManager.AddEventListener(EventId.TOGGLE_SOUND, ToggleSound);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.RemoveEventListener(EventId.TOGGLE_MUSIC, ToggleMusic);
+        EventManager.RemoveEventListener(EventId.TOGGLE_SOUND, ToggleSound);
     }
 
     private void CreateLevelButtons()
@@ -25,5 +43,15 @@ public class CanvasMenu : MonoBehaviour
                 .SetText((i + 1).ToString())
                 .ShowStar(levelData.Item1, levelData.Item2);
         }
+    }
+
+    private void ToggleMusic(object obj = null)
+    {
+        _musicOn.enabled = !AudioManager.MusicOn;
+    }
+
+    private void ToggleSound(object obj = null)
+    {
+        _soundOn.enabled = !AudioManager.SoundOn;
     }
 }

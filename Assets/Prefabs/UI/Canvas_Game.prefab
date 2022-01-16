@@ -203,7 +203,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1008221454208148040}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &660092027127521216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -715,7 +715,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a521708747cf1249bc97f0306b8f983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _allowSceneActivation: 1
   _screenId: 0
 --- !u!1 &1766684173786099832
 GameObject:
@@ -1295,7 +1294,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a521708747cf1249bc97f0306b8f983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _allowSceneActivation: 1
   _screenId: 0
 --- !u!1 &3959724427131646467
 GameObject:
@@ -1537,7 +1535,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5851708982142885811}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &8268809763305203655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1613,7 +1611,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6022318087400047618}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &4577347187370052379
 MonoBehaviour:
   m_ObjectHideFlags: 0

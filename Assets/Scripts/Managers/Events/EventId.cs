@@ -11,5 +11,6 @@ public enum EventId
     PLAY_SOUND,
     TOGGLE_SOUND,
     TOGGLE_MUSIC,
-    CHANGE_SCREEN
+    CHANGE_SCREEN,
+    TOGGLE_PAUSE
 }

@@ -56,11 +56,15 @@ public class CanvasGame : MonoBehaviour
     private void ShowQuitPopup(object obj = null)
     {
         _quitPopup.SetActive(true);
+
+        EventManager.DispatchEvent(EventId.TOGGLE_PAUSE);
     }
 
     private void HideQuitPopup(object obj = null)
     {
         _quitPopup.SetActive(false);
+
+        EventManager.DispatchEvent(EventId.TOGGLE_PAUSE);
     }
 
     private void ShowWonPopup(object obj)

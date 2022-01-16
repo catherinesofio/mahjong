@@ -4,10 +4,11 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class Node : MonoBehaviour
 {
-    [SerializeField]
     private int _id;
+
     private int _x;
     private int _y;
+    
     private HashSet<Node> _neighbours;
 
     [SerializeField]
@@ -93,7 +94,10 @@ public class Node : MonoBehaviour
 
     private void OnMouseDown()
     {
-        EventManager.DispatchEvent(EventId.NODE_CLICK, this);
+        if (!GameLogic.IsPaused)
+        {
+            EventManager.DispatchEvent(EventId.NODE_CLICK, this);
+        }
     }
 
     #region Selection
@@ -131,6 +135,11 @@ public class Node : MonoBehaviour
         _anim.Play("Anim_Highlight");
 
         EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.NODE_HINT);
+    }
+
+    public void UnHint()
+    {
+        _anim.Play("Anim_Idle");
     }
     #endregion
 

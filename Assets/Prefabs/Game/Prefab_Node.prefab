@@ -153,7 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 005c2fa6c86adac4b8521bf1a8774c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: 0
   _nodeType: {fileID: 7178564395183406654}
   _nodeBackground: {fileID: 5750183256801073135}
   _anim: {fileID: 8515392382939488144}
@@ -202,6 +201,7 @@ Animation:
   m_Animation: {fileID: 7400000, guid: b7c1a8a6f7ccbcf409b095bb307ce671, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: b7c1a8a6f7ccbcf409b095bb307ce671, type: 2}
+  - {fileID: 7400000, guid: d7dda83ddd7b77341903a24583954d8d, type: 2}
   - {fileID: 7400000, guid: b27fb259755c26541a7fc7f2958efe86, type: 2}
   - {fileID: 7400000, guid: 62257882aaaab8d429d458ba8f4b9ea6, type: 2}
   m_WrapMode: 0

@@ -27,23 +27,30 @@ public class GameLogic : MonoBehaviour
     private GameObject _nodePrefab;
 
     private Node _selected;
+    private Node[] _hints;
     private Node[] _graph;
     
     private Dictionary<int, List<Node>> _activeNodes;
 
+    public static bool IsPaused { get; private set; }
+
     private void Start()
     {
-        _score = 0;
         LoadLevel();
+
+        _score = 0;
+        IsPaused = false;
 
         EventManager.AddEventListener(EventId.NODE_CLICK, SelectNode);
         EventManager.AddEventListener(EventId.GET_HINT, ShowHint);
+        EventManager.AddEventListener(EventId.TOGGLE_PAUSE, TogglePause);
     }
 
     private void OnDestroy()
     {
         EventManager.RemoveEventListener(EventId.NODE_CLICK, SelectNode);
         EventManager.RemoveEventListener(EventId.GET_HINT, ShowHint);
+        EventManager.RemoveEventListener(EventId.TOGGLE_PAUSE, TogglePause);
     }
 
     #region Load Level
@@ -61,7 +68,7 @@ public class GameLogic : MonoBehaviour
         var reader = new StringReader(stringLayout);
         _countX = reader.ReadLine().Length + 2;
 
-        // I am surrounding the graph with empty nodes to be able to match nodes in the border
+        // I am surrounding the graph with empty nodes to be able to match the tiles in the borders
         // Line (beginning and end)
         stringLayout = "0" + stringLayout.Replace(System.Environment.NewLine, "00") + "0";
 
@@ -77,6 +84,7 @@ public class GameLogic : MonoBehaviour
 
     }
 
+
     private void CreateGraph(char[] layout)
     {
         _graph = new Node[_countX * _countY];
@@ -85,11 +93,11 @@ public class GameLogic : MonoBehaviour
         var unmatchedTile = -1;
         for (var i = 0; i < _countX * _countY; i++)
         {
-            GetOrCreateNode(i, layout, unmatchedTile);
+            GetOrCreateNode(i, layout, ref unmatchedTile);
         }
     }
 
-    private Node GetOrCreateNode(int id, char[] layout, int unmatchedTile)
+    private Node GetOrCreateNode(int id, char[] layout, ref int unmatchedTile)
     {
         if (_graph[id] != null)
         {
@@ -135,34 +143,34 @@ public class GameLogic : MonoBehaviour
 
         _graph[id] = node;
 
-        SetNeighbours(id, layout, unmatchedTile);
+        SetNeighbours(id, layout, ref unmatchedTile);
 
         return node;
     }
 
-    private void SetNeighbours(int id, char[] layout, int unmatchedTile)
+    private void SetNeighbours(int id, char[] layout, ref int unmatchedTile)
     {
         var x = id % _countX;
         var y = id / _countX;
 
         if (x > 0)
         {
-            _graph[id].AddNeighbour(GetOrCreateNode(id - 1, layout, unmatchedTile));
+            _graph[id].AddNeighbour(GetOrCreateNode(id - 1, layout, ref unmatchedTile));
         }
 
         if (x < _countX - 1)
         {
-            _graph[id].AddNeighbour(GetOrCreateNode(id + 1, layout, unmatchedTile));
+            _graph[id].AddNeighbour(GetOrCreateNode(id + 1, layout, ref unmatchedTile));
         }
 
         if (y > 0)
         {
-            _graph[id].AddNeighbour(GetOrCreateNode(id - _countX, layout, unmatchedTile));
+            _graph[id].AddNeighbour(GetOrCreateNode(id - _countX, layout, ref unmatchedTile));
         }
 
         if (y < _countY - 1)
         {
-            _graph[id].AddNeighbour(GetOrCreateNode(id + _countX, layout, unmatchedTile));
+            _graph[id].AddNeighbour(GetOrCreateNode(id + _countX, layout, ref unmatchedTile));
         }
     }
 
@@ -206,6 +214,8 @@ public class GameLogic : MonoBehaviour
         }
         else
         {
+            HideHint();
+
             node.Select();
 
             var turns = GetTurns(_selected, node);
@@ -293,15 +303,23 @@ public class GameLogic : MonoBehaviour
                 if (IsNodeSurrounded(curr))
                 {
                     surroundedNodes.Add(curr);
+
                     continue;
                 }
 
                 for (var i = 1; i < nodes.Count; i++)
                 {
                     var next = nodes[i];
-
+                    
                     if (surroundedNodes.Contains(next) || unmatchable.ContainsKey(next) && unmatchable[next] == curr)
                     {
+                        continue;
+                    }
+
+                    if (IsNodeSurrounded(next))
+                    {
+                        surroundedNodes.Add(next);
+
                         continue;
                     }
 
@@ -338,19 +356,41 @@ public class GameLogic : MonoBehaviour
 
         if (activeCount <= 1)
         {
+            IsPaused = true;
             EventManager.DispatchEvent(EventId.GAME_WON, _score);
         }
         else if (IsUnsolvable())
         {
+            IsPaused = true;
             EventManager.DispatchEvent(EventId.GAME_LOST);
         }
+    }
+
+    private void TogglePause(object obj = null) {
+        IsPaused = !IsPaused;
     }
 
     private void ShowHint(object obj = null)
     {
         var match = GetMatch();
 
+        _hints = new Node[2];
+
+        _hints[0] = match.Item1;
+        _hints[1] = match.Item2;
+
         match.Item1.Hint();
         match.Item2.Hint();
+    }
+
+    private void HideHint()
+    {
+        if (_hints != null && _hints[0] != null)
+        {
+            _hints[0].UnHint();
+            _hints[1].UnHint();
+
+            _hints = new Node[2];
+        }
     }
 }
