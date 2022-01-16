@@ -42,7 +42,7 @@ public class EventManager : MonoBehaviour
 
     public static void DispatchEvent(EventId eventId, object obj = null)
     {
-        if (_events.ContainsKey(eventId))
+        if (_events.ContainsKey(eventId) && _events[eventId] != null)
         {
             _events[eventId](obj);
         }

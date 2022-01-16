@@ -14,15 +14,13 @@ public class CanvasMenu : MonoBehaviour
 
     private void CreateLevelButtons()
     {
-        var dataManager = GameObject.FindObjectOfType<DataManager>();
-
-        var levelCount = dataManager.LevelsCount;
+        var levelCount = DataManager.LevelsCount;
         for (var i = 0; i < levelCount; i++)
         {
             var go = GameObject.Instantiate(_prefabButtonLevel, _scrollViewContent);
 
-            var levelData = dataManager.GetLevelData(i);
-            var btn = go.GetComponent<ButtonChangeLevel>()
+            var levelData = DataManager.GetLevelData(i);
+            var btn = go.GetComponent<ButtonGoToLevel>()
                 .SetLevel(i)
                 .SetText((i + 1).ToString())
                 .ShowStar(levelData.Item1, levelData.Item2);

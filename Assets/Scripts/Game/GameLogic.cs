@@ -6,12 +6,14 @@ using UnityEngine;
 
 public class GameLogic : MonoBehaviour
 {
-    private int _score;
-
+    [Range(1, 100)]
     [SerializeField]
     private int _posPoints;
+    [Range(-100, -1)]
     [SerializeField]
     private int _negPoints;
+
+    private int _score;
 
     // Count of cells by axis
     private int _countX;
@@ -26,7 +28,7 @@ public class GameLogic : MonoBehaviour
 
     private Node _selected;
     private Node[] _graph;
-
+    
     private Dictionary<int, List<Node>> _activeNodes;
 
     private void Start()
@@ -41,7 +43,7 @@ public class GameLogic : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.RemoveEventListener(EventId.NODE_CLICK, SelectNode);
-        EventManager.RemoveEventListener(EventId.NODE_CLICK, ShowHint);
+        EventManager.RemoveEventListener(EventId.GET_HINT, ShowHint);
     }
 
     #region Load Level
@@ -53,9 +55,7 @@ public class GameLogic : MonoBehaviour
 
     private char[] GetGameLayout()
     {
-        var dataManager = GameObject.FindObjectOfType<DataManager>();
-
-        var path = $"{dataManager.GetLevelPath()}";
+        var path = $"{DataManager.GetLevelPath()}";
         var stringLayout = Utils.ReadTextFile(path);
 
         var reader = new StringReader(stringLayout);
@@ -69,7 +69,7 @@ public class GameLogic : MonoBehaviour
         var borderLine = new string('0', _countX);
         stringLayout = borderLine + stringLayout + borderLine;
 
-        var nodes = stringLayout.ToCharArray().Where(x => x == 'X' || x == '0').ToArray();
+        var nodes = stringLayout.ToUpper().ToCharArray().Where(x => x == 'X' || x == '0').ToArray();
         
         _countY = nodes.Length / _countX;
 
@@ -118,8 +118,7 @@ public class GameLogic : MonoBehaviour
                 unmatchedTile = -1;
             } else
             {
-                var dataManager = GameObject.FindObjectOfType<DataManager>();
-                nodeId = UnityEngine.Random.Range(0, dataManager.GetLevelTilesCount() - 1);
+                nodeId = UnityEngine.Random.Range(0, DataManager.GetLevelTilesCount() - 1);
 
                 node.SetId(nodeId);
                 unmatchedTile = nodeId;
@@ -190,8 +189,7 @@ public class GameLogic : MonoBehaviour
             return;
         }
 
-        var isSurrounded = node.Neighbours.Count == node.Neighbours.Where(n => n.Id >= 0).Count();
-        if (isSurrounded)
+        if (IsNodeSurrounded(node))
         {
             node.CancelSelection();
         }
@@ -233,6 +231,11 @@ public class GameLogic : MonoBehaviour
 
             _selected = null;
         }
+    }
+
+    private bool IsNodeSurrounded(Node node)
+    {
+        return node.Neighbours.Count == node.Neighbours.Where(n => n.Id >= 0).Count();
     }
 
     // Basically Dijkstra
@@ -281,16 +284,23 @@ public class GameLogic : MonoBehaviour
         foreach (var x in _activeNodes)
         {
             var nodes = x.Value;
+            var surroundedNodes = new HashSet<Node>();
             var unmatchable = new Dictionary<Node, Node>();
 
             if (nodes.Count > 1)
             {
                 var curr = nodes[0];
+                if (IsNodeSurrounded(curr))
+                {
+                    surroundedNodes.Add(curr);
+                    continue;
+                }
+
                 for (var i = 1; i < nodes.Count; i++)
                 {
                     var next = nodes[i];
 
-                    if (unmatchable.ContainsKey(next) && unmatchable[next] == curr)
+                    if (surroundedNodes.Contains(next) || unmatchable.ContainsKey(next) && unmatchable[next] == curr)
                     {
                         continue;
                     }
@@ -343,126 +353,4 @@ public class GameLogic : MonoBehaviour
         match.Item1.Hint();
         match.Item2.Hint();
     }
-
-    /* OLD LOGIC (using coroutines)
-    private void SelectNode(object obj)
-    {
-        if (_coroutine != null)
-        {
-            return;
-        }
-
-        var node = (Node)obj;
-        if (_selected == node)
-        {
-            node.Unselect(); 
-
-            _selected = null;
-
-            return;
-        }
-
-        var isSurrounded = node.Neighbours.Count == node.Neighbours.Where(n => n.Id >= 0).Count();
-        if (isSurrounded)
-        {
-            node.CancelSelection();
-        }
-        else if (_selected == null)
-        {
-            node.Select();
-            
-            _selected = node;
-        }
-        else if (_selected.Id != node.Id)
-        {
-            AddScore(_negPoints);
-            node.CancelSelection();
-        }
-        else
-        {
-            node.Select();
-
-            _coroutine = StartCoroutine(CalculateTurns(_selected, node));
-        }
-    }
-
-    private IEnumerator CalculateTurns(Node from, Node to)
-    {
-        var nextNodeToGoal = new Dictionary<Node, Node>();
-        var costToReachNode = new Dictionary<Node, float>();
-
-        var queue = new PriorityQueue<Node, float>();
-
-        queue.Enqueue(to, 0, 0);
-        costToReachNode[to] = 0;
-
-        while (!queue.IsEmpty)
-        {
-            var curr = queue.Dequeue();
-            var currNode = curr.Item1;
-            var currDir = curr.Item2;
-            
-            if (currNode == from)
-            {
-                break;
-            }
-
-            // Filter out the NOT empty nodes
-            var neighbours = currNode.Neighbours.Where(n => (n.Id < 0 || n == from));
-            foreach (var n in neighbours)
-            {
-                var nDir = (currNode.X == n.X) ? 1 : 2;
-                var cost = costToReachNode[currNode] + ((currDir == 0 || currDir == nDir) ? 0 : 1);
-
-                if (!costToReachNode.ContainsKey(n) || cost < costToReachNode[n])
-                {
-                    costToReachNode[n] = cost;
-                    queue.Enqueue(n, cost, nDir);
-                    nextNodeToGoal[n] = currNode;
-                }
-            }
-
-            yield return null;
-        }
-
-        if (!nextNodeToGoal.ContainsKey(from))
-        {
-            from.CancelSelection();
-            to.CancelSelection();
-        } else
-        {
-            // JUST FOR TESTING!
-            Debug.Log($"({from.X}:{from.Y}) => ({to.X}:{to.Y})");
-            var pathNode = from;
-            var path = $"({from.X}:{from.Y})";
-            while (pathNode != to)
-            {
-                pathNode = nextNodeToGoal[pathNode];
-                path += $" => ({pathNode.X}:{pathNode.Y})";
-            }
-            Debug.Log(path);
-            // CAN ABSOLUTELY BE REMOVED :)
-
-            if (costToReachNode[from] > 2)
-            {
-                AddScore(_negPoints);
-
-                from.CancelSelection();
-                to.CancelSelection();
-            } else
-            {
-                _activeNodes[from.Id].Remove(from);
-                _activeNodes[to.Id].Remove(to);
-
-                from.Match();
-                to.Match();
-
-                AddScore(_posPoints);
-            }
-        }
-
-        _selected = null;
-        _coroutine = null;
-    }
-    */
 }

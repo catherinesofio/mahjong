@@ -5,8 +5,6 @@ using UnityEngine.UI;
 public class ButtonChangeScreen : MonoBehaviour
 {
     [SerializeField]
-    private bool _allowSceneActivation;
-    [SerializeField]
     private ScreenId _screenId;
 
     protected virtual void Start()
@@ -17,7 +15,7 @@ public class ButtonChangeScreen : MonoBehaviour
 
     protected virtual void TriggerChangeScreen()
     {
-        var screenManager = GameObject.FindObjectOfType<ScreenManager>();
-        screenManager.ChangeScreen(_screenId, _allowSceneActivation);
+        EventManager.DispatchEvent(EventId.CHANGE_SCREEN, (object)_screenId);
+        EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.BUTTON_PRESS);
     }
 }

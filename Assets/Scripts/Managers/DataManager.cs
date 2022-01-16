@@ -5,42 +5,30 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    private int _level;
+    private static DataManager _instance;
 
     [SerializeField]
     private LevelsData _levels;
 
-    private string _pathPlayerData = "player_data.json";
+    private const string _pathPlayerData = "player_data.json";
     private static PlayerDataModel _playerData;
 
-    private static DataManager _instance;
-
     #region Properties
-    public int LevelsCount
+    public static int LevelsCount
     {
         get
         {
-            return _levels.data.Length;
+            return _instance._levels.data.Length;
         }
     }
 
-    public int Level
-    {
-        get
-        {
-            return _level;
-        }
-        set
-        {
-            _level = value;
-        }
-    }
+    public static int Level { get; set; }
     
-    public int LevelHighscore
+    public static int LevelHighscore
     {
         get
         {
-            var data = _playerData.levelData.Where(x => x.level == _level).FirstOrDefault();
+            var data = _playerData.levelData.Where(x => x.level == Level).FirstOrDefault();
 
             return (data != null) ? data.highscore : 0;
         }
@@ -48,32 +36,32 @@ public class DataManager : MonoBehaviour
     #endregion
     
     #region Current Level Getters
-    public string GetLevelPath()
+    public static string GetLevelPath()
     {
-        return $"{_levels.folder}/{_levels.data[_level].layoutFiles}";
+        return $"{_instance._levels.folder}/{_instance._levels.data[Level].layoutFiles}";
     }
 
-    public int GetLevelTilesCount()
+    public static int GetLevelTilesCount()
     {
-        return _levels.data[_level].tilesData.sprites.Length;
+        return _instance._levels.data[Level].tilesData.sprites.Length;
     }
 
-    public Sprite GetLevelSprite(int id)
+    public static Sprite GetLevelSprite(int id)
     {
-        return _levels.data[_level].tilesData.sprites[id];
+        return _instance._levels.data[Level].tilesData.sprites[id];
     }
 
-    public Color GetLevelSelectedColor() {
-        return _levels.data[_level].tilesData.selectedColor;
+    public static Color GetLevelSelectedColor() {
+        return _instance._levels.data[Level].tilesData.selectedColor;
     }
-    public Color GetLevelUnselectedColor()
+    public static Color GetLevelUnselectedColor()
     {
-        return _levels.data[_level].tilesData.unselectedColor;
+        return _instance._levels.data[Level].tilesData.unselectedColor;
     }
     #endregion
 
     #region Menu Getters
-    public Tuple<bool, bool> GetLevelData(int level)
+    public static Tuple<bool, bool> GetLevelData(int level)
     {
         var data = _playerData.levelData.Where(x => x != null && x.level == level).FirstOrDefault();
 
@@ -91,7 +79,7 @@ public class DataManager : MonoBehaviour
         return new Tuple<bool, bool>(hasCompletedLevel, hasJustGainedStar);
     }
 
-    public bool IsLevelCompleted(int level)
+    public static bool IsLevelCompleted(int level)
     {
         var data = _playerData.levelData.Where(x => x != null && x.level == level).FirstOrDefault();
 
@@ -114,14 +102,14 @@ public class DataManager : MonoBehaviour
     {
         LoadData();
 
-        EventManager.AddEventListener(EventId.GAME_WON, UpdateScore);
+        EventManager.AddEventListener(EventId.GAME_WON, UpdateHighscore);
         EventManager.AddEventListener(EventId.DATA_RESET, DeleteData);
     }
 
-    private void UpdateScore(object obj)
+    private void UpdateHighscore(object obj)
     {
         var score = (int)obj;
-        var data = _playerData.levelData.Where(x => x.level == _level).FirstOrDefault();
+        var data = _playerData.levelData.Where(x => x.level == Level).FirstOrDefault();
     
         if (data != null && score > data.highscore)
         {
@@ -129,7 +117,7 @@ public class DataManager : MonoBehaviour
         } else
         {
             data = new LevelDataModel();
-            data.level = _level;
+            data.level = Level;
             data.highscore = score;
             data.hasJustGainedStar = true;
 
@@ -139,6 +127,7 @@ public class DataManager : MonoBehaviour
         SaveData();
     }
 
+    #region Persistent Data
     private void LoadData()
     {
         _playerData = Utils.ReadJson<PlayerDataModel>(_pathPlayerData);
@@ -149,15 +138,17 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    private void SaveData()
+    private static void SaveData()
     {
         Utils.WriteJson<PlayerDataModel>(_playerData, _pathPlayerData);
     }
 
-    private void DeleteData(object obj = null)
+    private static void DeleteData(object obj = null)
     {
         _playerData = new PlayerDataModel();
+        _playerData.levelData = new List<LevelDataModel>();
 
         Utils.DeletePersistentData();
     }
+    #endregion
 }

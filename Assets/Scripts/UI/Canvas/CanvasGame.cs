@@ -5,11 +5,11 @@ public class CanvasGame : MonoBehaviour
 {
     [SerializeField]
     private Text _scoreText;
-
     [SerializeField]
     private Text _scoreWonText;
     [SerializeField]
     private Text _highscoreWonText;
+
     [SerializeField]
     private GameObject _wonPopup;
     [SerializeField]
@@ -46,6 +46,7 @@ public class CanvasGame : MonoBehaviour
         _scoreText.text = score.ToString();
     }
 
+    #region PopUps
     private void ShowLostPopup(object obj = null)
     {
         _quitPopup.SetActive(false);
@@ -65,10 +66,10 @@ public class CanvasGame : MonoBehaviour
     private void ShowWonPopup(object obj)
     {
         var score = (int)obj;
-        var dataManager = GameObject.FindObjectOfType<DataManager>();
 
         _scoreWonText.text = score.ToString();
-        _highscoreWonText.text = dataManager.LevelHighscore.ToString();
+        _highscoreWonText.text = DataManager.LevelHighscore.ToString();
         _wonPopup.SetActive(true);
     }
+    #endregion
 }

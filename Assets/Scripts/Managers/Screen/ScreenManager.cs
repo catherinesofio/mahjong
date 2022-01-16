@@ -4,8 +4,11 @@ using UnityEngine.SceneManagement;
 
 public class ScreenManager : MonoBehaviour
 {
-    private bool _isLoading;
     private static ScreenManager _instance;
+
+    private bool _isLoading;
+
+    public static ScreenId Screen { get; private set; }
 
     private void Awake()
     {
@@ -15,25 +18,34 @@ public class ScreenManager : MonoBehaviour
         } else
         {
             _instance = this;
-
             _isLoading = false;
+            Screen = ScreenId.MENU;
+
             DontDestroyOnLoad(this);
         }
     }
 
-    public void ChangeScreen(ScreenId screenId, bool allowSceneActivation = true)
+    private void Start()
     {
+        EventManager.AddEventListener(EventId.CHANGE_SCREEN, ChangeScreen);
+    }
+
+    private void ChangeScreen(object obj)
+    {
+        var screenId = (ScreenId)obj;
+
         if (!_isLoading)
         {
+            Screen = screenId;
+
             _isLoading = true;
-            StartCoroutine(LoadScreen((int)screenId, allowSceneActivation));
+            StartCoroutine(LoadScreen((int)screenId));
         }
     }
 
-    private IEnumerator LoadScreen(int screenId, bool allowSceneActivation)
+    private IEnumerator LoadScreen(int screenId)
     {
         var asyncOperation = SceneManager.LoadSceneAsync(screenId, LoadSceneMode.Single);
-        asyncOperation.allowSceneActivation = allowSceneActivation;
 
         while (!asyncOperation.isDone)
         {

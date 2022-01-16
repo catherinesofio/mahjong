@@ -203,7 +203,7 @@ Animation:
   m_Animations:
   - {fileID: 7400000, guid: b7c1a8a6f7ccbcf409b095bb307ce671, type: 2}
   - {fileID: 7400000, guid: b27fb259755c26541a7fc7f2958efe86, type: 2}
-  - {fileID: 7400000, guid: b27fb259755c26541a7fc7f2958efe86, type: 2}
+  - {fileID: 7400000, guid: 62257882aaaab8d429d458ba8f4b9ea6, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0

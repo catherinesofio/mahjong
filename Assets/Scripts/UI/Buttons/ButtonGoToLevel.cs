@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonChangeLevel : ButtonChangeScreen
+public class ButtonGoToLevel : ButtonChangeScreen
 {
     [SerializeField]
     private int _level;
@@ -29,27 +29,26 @@ public class ButtonChangeLevel : ButtonChangeScreen
 
     protected override void TriggerChangeScreen()
     {
-        var dataManager = GameObject.FindObjectOfType<DataManager>();
-        dataManager.Level = _level;
+        DataManager.Level = _level;
 
         base.TriggerChangeScreen();
     }
 
-    public ButtonChangeLevel SetLevel(int level)
+    public ButtonGoToLevel SetLevel(int level)
     {
         _level = level;
 
         return this;
     }
 
-    public ButtonChangeLevel SetText(string text)
+    public ButtonGoToLevel SetText(string text)
     {
         _text.text = text;
 
         return this;
     }
 
-    public ButtonChangeLevel ShowStar(bool show, bool firstTime)
+    public ButtonGoToLevel ShowStar(bool show, bool firstTime)
     {
         _star.SetActive(show);
 

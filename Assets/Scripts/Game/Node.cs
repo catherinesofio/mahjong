@@ -18,8 +18,6 @@ public class Node : MonoBehaviour
     [SerializeField]
     private Animation _anim;
 
-    private static DataManager _dataManager;
-
     #region Properties
     public int Id
     {
@@ -72,7 +70,7 @@ public class Node : MonoBehaviour
             Hide();
         } else
         {
-            _nodeType.sprite = _dataManager.GetLevelSprite(id);
+            _nodeType.sprite = DataManager.GetLevelSprite(id);
         }
     }
 
@@ -91,11 +89,6 @@ public class Node : MonoBehaviour
     private void Awake()
     {
         _neighbours = new HashSet<Node>();
-
-        if (!_dataManager)
-        {
-            _dataManager = GameObject.FindObjectOfType<DataManager>();
-        }
     }
 
     private void OnMouseDown()
@@ -106,39 +99,45 @@ public class Node : MonoBehaviour
     #region Selection
     public void Select()
     {
-        _nodeBackground.color = _dataManager.GetLevelSelectedColor();
+        _nodeBackground.color = DataManager.GetLevelSelectedColor();
+
+        EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.NODE_SELECT);
     }
 
     public void Unselect()
     {
-        _nodeBackground.color = _dataManager.GetLevelUnselectedColor();
+        _nodeBackground.color = DataManager.GetLevelUnselectedColor();
+
+        EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.NODE_UNSELECT);
     }
 
     public void CancelSelection()
     {
         Unselect();
-
         _anim.Play("Anim_Shake");
+
+        EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.NODE_CANCEL);
     }
 
     public void Match()
     {
-        _anim.Stop();
-
         Hide();
+
+        EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.NODE_MATCH);
     }
 
     public void Hint()
     {
-        Debug.Log( _anim.GetClipCount());
         _anim.Play("Anim_Highlight");
+
+        EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.NODE_HINT);
     }
     #endregion
 
     private void Hide()
     {
         _id = -1;
-
+        _anim.Stop();
         gameObject.SetActive(false);
     }
 }

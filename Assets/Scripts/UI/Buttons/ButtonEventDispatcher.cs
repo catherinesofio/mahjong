@@ -16,5 +16,6 @@ public class ButtonEventDispatcher : MonoBehaviour
     private void CallEvent()
     {
         EventManager.DispatchEvent(_eventId);
+        EventManager.DispatchEvent(EventId.PLAY_SOUND, SoundId.BUTTON_PRESS);
     }
 }

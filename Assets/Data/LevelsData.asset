@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738b8a3da824dbc4d9f08f4f8d9d0bfa, type: 3}
   m_Name: LevelsData
   m_EditorClassIdentifier: 
-  folder: TestLayouts
+  folder: Layouts
   data:
   - layoutFiles: Layout_01.txt
     tilesData: {fileID: 11400000, guid: c7fcc6ef97b9f3f4a884a7344ac7c774, type: 2}

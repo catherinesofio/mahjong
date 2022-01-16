@@ -3,6 +3,18 @@ using UnityEngine;
 
 public class Utils
 {
+    public static bool GetBoolPlayerPref(string name)
+    {
+        var pref = PlayerPrefs.GetInt(name, 1);
+
+        return (pref > 0);
+    }
+
+    public static void SetBoolPlayerPref(string name, bool value)
+    {
+        PlayerPrefs.SetInt(name, value ? 1 : 0);
+    }
+
     public static string ReadTextFile(string path)
     {
         var fullPath = $"{Application.dataPath}/{path}";

@@ -7,5 +7,9 @@ public enum EventId
     GAME_QUIT,
     GAME_RESUME,
     GAME_WON,
-    DATA_RESET
+    DATA_RESET,
+    PLAY_SOUND,
+    TOGGLE_SOUND,
+    TOGGLE_MUSIC,
+    CHANGE_SCREEN
 }
