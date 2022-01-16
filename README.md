@@ -104,21 +104,21 @@ This method is reused in the method **GetMatch**, which is applied to give hints
 ## Managers
 The following managers are all *Singletons* and persist during the whole execution of the program, as these are pretty much needed in every screen. Alongside the *Main Camera*, these are contained in the **Prefab_GeneralManagers**.
 
-### [EventManager](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Events/EventManager.cs)
+### [Event Manager](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Events/EventManager.cs)
 > *This class implements an enum **[EventId](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Events/EventId.cs)** to identify the events.*
 
 The **Event Manager** allows decoupled communications between classes whenever a certain event is thrown.
 
 <br/>
 
-### [ScreenManager](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Screen/ScreenManager.cs)
+### [Screen Manager](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Screen/ScreenManager.cs)
 > *This class implements an enum **[ScreenId](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Screen/ScreenId.cs)** to identify the screens.*
 
 The **Screen Manager** ~~otherwise known as Scene Manager, but that name was already taken by Unity lol~~ is the responsible for switching and loading the different screens. It loads scenes in an *asynchronous* fashion.
 
 <br/>
 
-### [DataManager](https://github.com/catherinesofio/mahjong/tree/main/Assets/Scripts/Managers/Screen)
+### [Data Manager](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/DataManager.cs)
 
 The **Data Manager** contains all the information that will be referenced in the program. For example, the saving and retrieving of *Player Data* (completed levels, highscores) is handled here.
 
@@ -126,7 +126,7 @@ Apart from the persistent data, it also contains references to easily customizab
 
 <br/>
 
-### [AudioManager](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Audio/AudioManager.cs)
+### [Audio Manager](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Audio/AudioManager.cs)
 > *This class implements the enums **[SoundId](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Audio/SoundId.cs)** and **[ScreenId](https://github.com/catherinesofio/mahjong/blob/main/Assets/Scripts/Managers/Screen/ScreenId.cs)** (because music varies by scene) to identify the audio.*
 
 The **Audio Manager** contains 2 different *Audio Sources* for each channel (Sound and Music). Aside from playing audio, it's also in charge of dealing with the *Player Prefs* related to the toggling of any of those channels.
@@ -135,7 +135,7 @@ The **Audio Manager** contains 2 different *Audio Sources* for each channel (Sou
 
 ## Player Data
 
-It refers to the **Persistent Data**. As previously mentioned, the *Data Manager* is in charge of processing this data.
+It refers to the **Persistent Data**. As previously mentioned, the *[DataManager](https://github.com/catherinesofio/mahjong#data-manager)* is in charge of processing this data.
 
 The **LevelDataModel** defines a serializable object that contains the *Level Id*, *Level Highscore* and *"hasJustGainedStar"* (which is just a boolean that determines whether to show or not an animation when the player goes to the menu right after having completed a level for the very first time).
 
@@ -154,9 +154,9 @@ The **PlayerDataModel** contains a list of *LevelDataModels*. Whenever a level i
 
 For an easier customization of visuals, layouts and audio, scriptable objects were created to store such information.
 
-The **Audio Data** scriptable object contains 2 arrays, each representing the mapping of a certain *Audio Clip* to either a *SoundId* or a *ScreenId* (music). This object is used by the *AudioManager*.
+The **Audio Data** scriptable object contains 2 arrays, each representing the mapping of a certain *Audio Clip* to either a *SoundId* or a *ScreenId* (music). This object is used by the *[AudioManager](https://github.com/catherinesofio/mahjong#audio-manager)*.
 
-While the **Level Model** serializable class contains the *Layout File Name* and a reference to a scriptable object of type *TilesData* (which defines the possible tile sprites of a Level), the **Levels Data** contains an array of each LevelModel and the *Path of the Folder* which contains the layout files. This data is referenced in the *DataManager*, and is later accessed by *GameLogic* when the level layout is loaded.
+While the **Level Model** serializable class contains the *Layout File Name* and a reference to a scriptable object of type *TilesData* (which defines the possible tile sprites of a Level), the **Levels Data** contains an array of each LevelModel and the *Path of the Folder* which contains the layout files. This data is referenced in the *[DataManager](https://github.com/catherinesofio/mahjong#data-manager)*, and is later accessed by *[GameLogic](https://github.com/catherinesofio/mahjong#level-layout)* when the level layout is loaded.
 
 <br/>
 
